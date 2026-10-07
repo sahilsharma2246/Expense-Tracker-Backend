@@ -1,19 +1,13 @@
 const express = require('express');
-const { addTransaction, getAllTransaction, editTransaction,deleteTransaction } = require('../controllers/transactionCtlr');
-
-
 const router = express.Router();
+const { getExpenses, addExpense, deleteExpense } = require('../controllers/transactionCtlr');
+const { protect } = require('../middleware/authMiddleware');
 
-//add transaction
-router.post('/add-transections', addTransaction);
+router.route('/')
+  .get(protect, getExpenses)
+  .post(protect, addExpense);
 
-//edit transaction
-router.post('/edit-transections', editTransaction);
-
-router.post('/delete-transections', deleteTransaction);
-
-//get transaction
-router.post('/get-transections', getAllTransaction);
-
+router.route('/:id')
+  .delete(protect, deleteExpense);
 
 module.exports = router;

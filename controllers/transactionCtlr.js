@@ -1,65 +1,55 @@
-const transactionModel = require("../models/transactionModel");
-const moment = require('moment');
+const Transaction = require('../models/transactionModel');
 
-const getAllTransaction = async (req , resp) =>{
-    try {
-        const {frequency,startDate,type} = req.body
-        const transaction = await  transactionModel.find({
-            ...(frequency !== "custom" ? {
-                date:{
-                    $gt: moment().subtract(Number(frequency),"d").toDate(), 
-                },
-            } : {
-                date:{
-                    $gte: startDate[0],
-                    $lte: startDate[1],
-                }
-            }),
-            userid:req.body.userid,
-            ...(type!=="all" && {type}),
-        });
-        resp.status(201).json(transaction);
-    
-    } catch (error) {
-        console.log(error);
-        resp.status(500).json(error);
-        
-    }
+// @route GET /api/trans
+exports.getExpenses = async (req, res) => {
+  try {
+    const expenses = await Transaction.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.json(expenses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-const editTransaction = async (req,resp)=>{
-    try {
-        await transactionModel.findOneAndUpdate({_id:req.body.transactionId},req.body.payload);
-        resp.status(200).send("Edit Successfully")
-        
-    } catch (error) {
-        console.log(error);
-        resp.status(500).json(error);
-    }
-}
+// @route POST /api/trans
+exports.addExpense = async (req, res) => {
+  const { title, amount, type, category, date } = req.body;
 
-const deleteTransaction = async (req,res)=>{
-    try {
-        await transactionModel.findOneAndDelete({_id:req.body.transactionId});
-        res.status(200).send("Delete Successfully")
-        
-    } catch (error) {
-        console.log(error);
-        res.status(500).json(error);
-        
+  try {
+    if (!title || !amount || !category || !date) {
+      return res.status(400).json({ message: 'Please add all required fields' });
     }
 
-}
-const addTransaction = async (req, resp) =>{
-    try {
-        const newTransaction = new transactionModel(req.body);
-        await newTransaction.save();
-        resp.status(201).send("Transaction created")
-    } catch (error) {
-        console.log(error);
-        resp.status(500).json(error);
-        
-    }
+    const expense = await Transaction.create({
+      user: req.user._id,
+      title,
+      amount,
+      type: type || 'expense',
+      category,
+      date
+    });
+
+    res.status(201).json(expense);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-module.exports = {getAllTransaction, addTransaction,editTransaction,deleteTransaction};
+// @route DELETE /api/trans/:id
+exports.deleteExpense = async (req, res) => {
+  try {
+    const expense = await Transaction.findById(req.params.id);
+
+    if (!expense) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    if (expense.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized to delete this transaction' });
+    }
+
+    await expense.deleteOne();
+    res.json({ id: req.params.id, message: 'Transaction removed' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
