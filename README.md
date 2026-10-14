@@ -43,9 +43,4 @@ This repository contains the **Backend REST API source code** for the Expense Tr
 ---
 
 
-Follow these steps to run the backend API server on your local machine:
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/sahilsharma2246/Expense-Tracker-Backend.git](https://github.com/sahilsharma2246/Expense-Tracker-Backend.git)
-   cd Expense-Tracker-Backend
