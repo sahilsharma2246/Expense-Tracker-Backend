@@ -1,6 +1,3 @@
-### 2. Backend Repo (`Expense-Tracker-Backend`)
-
-```markdown
 # ⚙️ Expense Tracker REST API (Backend)
 
 Robust RESTful API service for the Expense Tracker application, supporting JWT user authentication, MongoDB Atlas storage, and transaction management endpoints.
@@ -44,3 +41,11 @@ This repository contains the **Backend REST API source code** for the Expense Tr
 - `DELETE /api/trans/:id` - Delete a specific transaction entry
 
 ---
+
+
+Follow these steps to run the backend API server on your local machine:
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/sahilsharma2246/Expense-Tracker-Backend.git](https://github.com/sahilsharma2246/Expense-Tracker-Backend.git)
+   cd Expense-Tracker-Backend
